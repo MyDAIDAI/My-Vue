@@ -1,4 +1,4 @@
-import {initState} from './observe/index'
+import {initState} from './observe/index';
 function Vue(options) {
   this._init(options);
 }
@@ -8,8 +8,8 @@ Vue.prototype._init = function (options) {
   vm.$options = options;
 
   // 需要将数据重新初始化
-  initState(vm)
+  initState(vm);
 }
 
 
-export default Vue
+export default Vue;
