@@ -15,3 +15,10 @@ let vm = new Vue({
   computed: {},
   watch: {}
 })
+setTimeout(() => {
+  vm.msg = '123123'
+  vm.msg = '12'
+  vm.msg = 'hello'
+  vm.msg = 'world'
+  // console.log('vm', vm)
+}, 1000);

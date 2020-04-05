@@ -10,11 +10,11 @@ export function defineReactive(data, key, value) {
       if (Dep.target) {
         dep.depend();
       }
-      console.log(key, dep)
       return value;
     },
     set(newVal) {
       if (newVal === value) return;
+      observe(newVal);
       value = newVal;
       dep.notify();
     }
