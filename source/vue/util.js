@@ -9,7 +9,11 @@ export const utils = {
   },
   compilerTxt: function (node, vm) {
     // <div>{{msg}}</div> -> <div>hello</div>
-    node.textContent = node.textContent.replace(defaultReg, function (...args) {
+    // 保存初始化时的模板字符串，否则替换后不能找到 {{msg}}
+    if (!node.expr) {
+      node.expr = node.textContent
+    }
+    node.textContent = node.expr.replace(defaultReg, function (...args) {
       return utils.getValue(vm, args[1]);
     })
   }
