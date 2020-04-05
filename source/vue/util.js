@@ -21,7 +21,7 @@ export function compiler(node, vm) {
     if (child.nodeType === 1) { // 1 元素节点 3 文本节点
       compiler(child, vm);
     } else if (child.nodeType === 3) {
-      utils.compilerTxt(node,vm);
+      utils.compilerTxt(child,vm);
     }
   });
 }

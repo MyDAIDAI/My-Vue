@@ -15,7 +15,3 @@ let vm = new Vue({
   computed: {},
   watch: {}
 })
-// 使用 push 等方法对数组进行修改时没有触发 setter 方法
-// 拦截数组中的修改方法
-
-// console.log('vm', vm.arr[3].a)

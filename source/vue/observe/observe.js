@@ -1,17 +1,22 @@
 import {observe} from './index';
 import { arrayPatchMethods, observerArray } from './array';
+import Dep from './dep';
 
 export function defineReactive(data, key, value) {
   observe(value)
+  let dep = new Dep();
   Object.defineProperty(data, key, {
     get() {
-      console.log('getter', key);
+      if (Dep.target) {
+        dep.depend();
+      }
+      console.log(key, dep)
       return value;
     },
     set(newVal) {
-      console.log('setter', key);
       if (newVal === value) return;
       value = newVal;
+      dep.notify();
     }
   })
 }
