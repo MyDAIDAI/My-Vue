@@ -52,5 +52,9 @@ Vue.prototype.$mount = function () {
   // 实例渲染 watcher
   new Watcher(vm, updateComponent);
 }
+Vue.prototype.$watch = function (key, handler) {
+  let vm = this;
+  new Watcher(vm, key, handler, {user: true});
+}
 
 export default Vue;

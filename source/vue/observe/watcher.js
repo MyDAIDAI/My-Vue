@@ -1,4 +1,5 @@
 import {pushStack, popStack} from './dep';
+import {utils} from '../util';
 let id = 0;
 class Watcher {
   constructor(vm, exprOrFn, cb = () => {}, opts = {}) {
@@ -6,18 +7,27 @@ class Watcher {
     this.exprOrFn = exprOrFn;
     if (typeof exprOrFn === 'function') {
       this.getter = exprOrFn;
+    } else {
+      this.getter = function () {
+        return utils.getValue(vm, exprOrFn); // 获取值会触发 getter 进行依赖收集
+      }
+    }
+    console.log('getter', JSON.stringify(this.getter))
+    if (opts.user) {
+      this.user = true
     }
     this.deps = [];
     this.depIds = new Set();
     this.cb = cb;
     this.opts = opts;
     this.id = id++;
-    this.get();
+    this.value = this.get(); // 保存第一次执行的结果，作为初始值
   }
   get() {
     pushStack(this);
-    this.getter();
+    let  value = this.getter();
     popStack();
+    return value;
   }
   update() {
     // 每改一次进行一次 watcher 的执行，性能较差，使用异步批量更新
@@ -35,7 +45,10 @@ class Watcher {
   }
   run() {
     console.log('run');
-    this.get();
+    let value = this.get();
+    if (value !== this.value) {
+      this.cb.call(this.vm, value, this.value);
+    }
   }
 }
 
