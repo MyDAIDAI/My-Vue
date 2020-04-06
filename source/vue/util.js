@@ -14,7 +14,7 @@ export const utils = {
       node.expr = node.textContent
     }
     node.textContent = node.expr.replace(defaultReg, function (...args) {
-      return utils.getValue(vm, args[1]);
+      return JSON.stringify(utils.getValue(vm, args[1]));
     })
   }
 }

@@ -1,14 +1,20 @@
 import {observe} from './index';
-import { arrayPatchMethods, observerArray } from './array';
+import { arrayPatchMethods, observerArray, dependArray } from './array';
 import Dep from './dep';
 
 export function defineReactive(data, key, value) {
-  observe(value)
+  let childObj = observe(value);
   let dep = new Dep();
   Object.defineProperty(data, key, {
     get() {
       if (Dep.target) {
         dep.depend();
+        if (childObj) {
+          childObj.dep.depend();
+          if(Array.isArray(value)) {
+            dependArray(value);
+          }
+        }
       }
       return value;
     },
@@ -22,6 +28,12 @@ export function defineReactive(data, key, value) {
 }
 class Observe{
   constructor (data) {
+    this.dep = new Dep();
+    Object.defineProperty(data, '__ob__', {
+      get: () => {
+        return this;
+      }
+    })
     if (Array.isArray(data)) {
       data.__proto__ = arrayPatchMethods;
       observerArray(data);

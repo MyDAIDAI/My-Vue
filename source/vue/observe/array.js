@@ -15,6 +15,15 @@ export function observerArray(arr) {
     observe(item);
   }
 }
+export function dependArray(value) {
+  for(let i = 0; i < value.length; i++) {
+    let currentItem = value[i];
+    currentItem.__ob__ && currentItem.__ob__.dep.depend();
+    if (Array.isArray) {
+      dependArray(currentItem); // 递归收集依赖
+    }
+  }
+}
 patchMethods.forEach(method => {
   arrayPatchMethods[method] = function (...args) {
     console.log('调用了数组的更新方法');
@@ -31,6 +40,7 @@ patchMethods.forEach(method => {
         break;
     }
     observerArray(inserted); // 对传入的数据添加响应式
+    this.__ob__.dep.notify();
     return result;
   }
 })

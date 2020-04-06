@@ -14,7 +14,10 @@ export function initState(vm) {
 }
 export function observe(data) {
   if (typeof data !== 'object' || data == null) return;
-  new Observe(data);
+  if (data.__ob__) {
+    return data.__ob__;
+  }
+  return new Observe(data);
 }
 function proxy(vm, source, key) {
   Object.defineProperty(vm, key, {
