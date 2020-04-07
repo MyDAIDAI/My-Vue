@@ -58,7 +58,7 @@ function initComputed(vm, computed) {
     let userDef = computed[key];
     watchers[key] = new Watcher(vm, userDef, () => {}, {lazy: true});
     Object.defineProperty(vm, key, {
-      get: createComputedGetter(vm, key);
+      get: createComputedGetter(vm, key)
     })
   }
 }

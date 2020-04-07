@@ -1,4 +1,6 @@
 import Vue from 'vue'
+import h from '../source/vue/vdom/h'
+import render from '../source/vue/vdom/patch'
 
 let vm = new Vue({
   el: '#app',
@@ -28,3 +30,11 @@ let vm = new Vue({
 setTimeout(() => {
   vm.firstName = 'li'
 }, 1000);
+let oldVnode =  h('div', {id: 'container', class: 'name'}, 
+    h('span', {style: {color: 'red'}}, 'hello'),
+    'world'
+  )
+let container = document.getElementById('app')
+render(oldVnode, container)
+
+console.log('oldVnode', oldVnode)
