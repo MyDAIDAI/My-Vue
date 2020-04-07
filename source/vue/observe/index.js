@@ -1,4 +1,6 @@
 import Observe from './observe';
+import Watcher  from './watcher';
+import Dep from './dep';
 export function initState(vm) {
   // 对传入的不同属性进行初始化  data computed watch
   let opts = vm.$options;
@@ -6,7 +8,7 @@ export function initState(vm) {
     initData(vm);
   }
   if (opts.computed) {
-    initComputed(vm);
+    initComputed(vm, opts.computed);
   }
   if (opts.watch) {
     initWatch(vm);
@@ -37,7 +39,29 @@ function initData(vm) {
   }
   observe(vm._data);
 }
-function initComputed(vm) {}
+function createComputedGetter(vm, key) {
+  let watcher = vm._computedWatchers[key];
+  return () => {
+    // 如果 dirty 为 true, 则需要进行求值
+    if (watcher.dirty) {
+      watcher.evaluate()
+    }
+    if (Dep.target) {
+      watcher.depend()
+    }
+    return watcher.value;
+  }
+}
+function initComputed(vm, computed) {
+  let watchers = vm._computedWatchers = Object.create(null);
+  for(let key in computed) {
+    let userDef = computed[key];
+    watchers[key] = new Watcher(vm, userDef, () => {}, {lazy: true});
+    Object.defineProperty(vm, key, {
+      get: createComputedGetter(vm, key);
+    })
+  }
+}
 function createWatcher(vm, key, handler) {
   return vm.$watch(key, handler);
 }

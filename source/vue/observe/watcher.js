@@ -12,28 +12,38 @@ class Watcher {
         return utils.getValue(vm, exprOrFn); // 获取值会触发 getter 进行依赖收集
       }
     }
-    console.log('getter', JSON.stringify(this.getter))
+    console.log('watcher', exprOrFn)
     if (opts.user) {
       this.user = true
     }
     this.deps = [];
+    this.lazy = opts.lazy;
+    this.dirty = this.lazy;
     this.depIds = new Set();
     this.cb = cb;
     this.opts = opts;
     this.id = id++;
-    this.value = this.get(); // 保存第一次执行的结果，作为初始值
+    this.value = this.lazy ? undefined : this.get(); // 保存第一次执行的结果，作为初始值
   }
   get() {
     pushStack(this);
-    let  value = this.getter();
+    let value = this.getter.call(this.vm);
     popStack();
     return value;
+  }
+  evaluate () {
+    this.value = this.get();
+    this.dirty = false;
   }
   update() {
     // 每改一次进行一次 watcher 的执行，性能较差，使用异步批量更新
     // 待同步所有赋值操作执行完成后，再进行更新
     console.log('update', this.id)
-    queueWatcher(this);
+    if (this.lazy) {
+      this.dirty = true
+    } else {
+      queueWatcher(this);
+    }
   }
   addDep(dep) {
     let id = dep.id;
@@ -41,6 +51,12 @@ class Watcher {
       this.deps.push(dep);
       this.depIds.add(id);
       dep.addSub(this);
+    }
+  }
+  depend() {
+    let i = this.deps.length;
+    while (i--) {
+      this.deps[i].depend();
     }
   }
   run() {
