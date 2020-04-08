@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import h from '../source/vue/vdom/h'
-import render from '../source/vue/vdom/patch'
-
+import render, {patch} from '../source/vue/vdom/patch'
 let vm = new Vue({
   el: '#app',
   data () {
@@ -27,14 +26,27 @@ let vm = new Vue({
   //   }
   // }
 })
-setTimeout(() => {
-  vm.firstName = 'li'
-}, 1000);
+// setTimeout(() => {
+//   vm.firstName = 'li'
+// }, 1000);
 let oldVnode =  h('div', {id: 'container', class: 'name'}, 
-    h('span', {style: {color: 'red'}}, 'hello'),
-    'world'
+    h('li', {style: {color: 'red'}, key: 'a'}, 'a'),
+    h('li', {style: {color: 'red'}, key: 'b'}, 'b'),
+    h('li', {style: {color: 'red'}, key: 'c'}, 'c'),
+    h('li', {style: {color: 'red'}, key: 'd'}, 'd')
+    // 'world'
   )
 let container = document.getElementById('app')
 render(oldVnode, container)
+let newVnode =  h('div', {id: 'container', class: 'name'},
+    h('li', {style: {color: 'red'}, key: 'd'}, 'd'),
+    h('li', {style: {color: 'red'}, key: 'a'}, 'a'),
+    h('li', {style: {color: 'red'}, key: 'b'}, 'b'),
+    h('li', {style: {color: 'red'}, key: 'c'}, 'c')
+    // 'world'
+  )
+setTimeout(() => {
+  patch(oldVnode, newVnode);
+}, 1000)
 
 console.log('oldVnode', oldVnode)
