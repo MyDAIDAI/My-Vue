@@ -67,7 +67,6 @@ export function patch(oldVnode, newVnode) {
   // 4.根节点比较完成，比较孩子节点
   let oldChildren = oldVnode.children || [];
   let newChildren = newVnode.children || [];
-  console.log('el', el, newVnode, oldVnode)
   if (oldChildren.length > 0 && newChildren.length > 0) { // 1) 老的有孩子，新的有孩子
     updateChildren(el, oldChildren, newChildren);
   } else if (oldChildren.length > 0) { // 2) 老的有孩子，新的没孩子
@@ -78,6 +77,7 @@ export function patch(oldVnode, newVnode) {
       el.appendChild(createElm(child));
     }
   }
+  return el;
 }
 function isSameVnode(oldVnode, newVnode) {
   return (oldVnode.tag === newVnode.tag) && (newVnode.key === oldVnode.key)

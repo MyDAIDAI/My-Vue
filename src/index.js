@@ -1,8 +1,10 @@
 import Vue from 'vue'
-import h from '../source/vue/vdom/h'
-import render, {patch} from '../source/vue/vdom/patch'
+
 let vm = new Vue({
   el: '#app',
+  render(h) {
+    return h('div', {id: 'container', class: 'name'}, this.fullName);
+  },
   data () {
     return {
       // msg: 'hello',
@@ -26,28 +28,29 @@ let vm = new Vue({
   //   }
   // }
 })
+setTimeout(()=> {
+  vm.firstName = 'sdfsdf'
+}, 1000)
 // setTimeout(() => {
 //   vm.firstName = 'li'
 // }, 1000);
-let oldVnode =  h('div', {id: 'container', class: 'name'}, 
-    h('li', {style: {color: 'red'}, key: 'a'}, 'a'),
-    h('li', {style: {color: 'red'}, key: 'b'}, 'b'),
-    h('li', {style: {color: 'red'}, key: 'c'}, 'c'),
-    h('li', {style: {color: 'red'}, key: 'd'}, 'd')
-    // 'world'
-  )
-let container = document.getElementById('app')
-render(oldVnode, container)
-let newVnode =  h('div', {id: 'container', class: 'name'},
-    h('li', {style: {color: 'red'}, key: 'd'}, 'd'),
-    h('li', {style: {color: 'red'}, key: 'e'}, 'e'),
-    h('li', {style: {color: 'red'}, key: 'a'}, 'a'),
-    h('li', {style: {color: 'red'}, key: 'f'}, 'f'),
-    h('li', {style: {color: 'red'}, key: 'c'}, 'c')
-    // 'world'
-  )
-setTimeout(() => {
-  patch(oldVnode, newVnode);
-}, 1000)
-
-console.log('oldVnode', oldVnode)
+// let oldVnode =  h('div', {id: 'container', class: 'name'}, 
+//     h('li', {style: {color: 'red'}, key: 'a'}, 'a'),
+//     h('li', {style: {color: 'red'}, key: 'b'}, 'b'),
+//     h('li', {style: {color: 'red'}, key: 'c'}, 'c'),
+//     h('li', {style: {color: 'red'}, key: 'd'}, 'd')
+//     // 'world'
+//   )
+// let container = document.getElementById('app')
+// render(oldVnode, container)
+// let newVnode =  h('div', {id: 'container', class: 'name'},
+//     h('li', {style: {color: 'red'}, key: 'd'}, 'd'),
+//     h('li', {style: {color: 'red'}, key: 'e'}, 'e'),
+//     h('li', {style: {color: 'red'}, key: 'a'}, 'a'),
+//     h('li', {style: {color: 'red'}, key: 'f'}, 'f'),
+//     h('li', {style: {color: 'red'}, key: 'c'}, 'c')
+//     // 'world'
+//   )
+// setTimeout(() => {
+//   patch(oldVnode, newVnode);
+// }, 1000)

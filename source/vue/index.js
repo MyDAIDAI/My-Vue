@@ -1,6 +1,8 @@
 import {initState} from './observe/index';
 import Watcher from './observe/watcher';
 import {compiler} from './util';
+import h from './vdom/h'
+import render, {patch} from './vdom/patch'
 function Vue(options) {
   this._init(options);
 }
@@ -24,20 +26,34 @@ function query(el) {
   return el;
 }
 
-Vue.prototype._update = function () {
+Vue.prototype._update = function (vnode) {
   // 将用户定义的数据插入到文档中
   let vm = this;
   let el = vm.$el;
+  let preVnode = vm.preVnode;
+  if (!preVnode) {
+    vm.preVnode = vnode;
+    render(vnode, el);
+  } else {
+    vm.$el = patch(preVnode, vnode);
+  }
   
   // 创建文档碎片，处理完后一次挂载到页面中，优化性能
-  let node = document.createDocumentFragment();
-  let firstChild;
-  while (firstChild = el.firstChild) {
-    node.appendChild(firstChild); // appendChild 具有迁移作用，会将原来位置的节点迁移到插入位置
-  }
+  // let node = document.createDocumentFragment();
+  // let firstChild;
+  // while (firstChild = el.firstChild) {
+  //   node.appendChild(firstChild); // appendChild 具有迁移作用，会将原来位置的节点迁移到插入位置
+  // }
 
-  compiler(node, vm);
-  el.appendChild(node);
+  // compiler(node, vm);
+  // el.appendChild(node);
+  // vm.patch(vnode)
+}
+Vue.prototype._render = function () {
+  let vm = this;
+  let render = vm.$options.render;
+  let vnode = render.call(vm, h);
+  return vnode;
 }
 Vue.prototype.$mount = function () {
   let vm = this;
@@ -47,7 +63,7 @@ Vue.prototype.$mount = function () {
 
   // 更新或者初始化渲染组件
   let updateComponent = () => {
-    vm._update(); // 更新组件
+    vm._update(vm._render()); // 更新组件
   }
   // 实例渲染 watcher
   new Watcher(vm, updateComponent);
