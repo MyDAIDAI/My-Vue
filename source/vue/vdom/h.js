@@ -31,11 +31,13 @@
 //   ]
 // }
 function vnode(tag, props, children, text) {
+  let key = props && props.key
   return {
     tag,
     props,
     children,
-    text
+    text,
+    key: key
   }
 } 
 /**

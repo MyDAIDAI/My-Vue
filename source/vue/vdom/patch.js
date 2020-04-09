@@ -55,7 +55,6 @@ export function patch(oldVnode, newVnode) {
     oldVnode.el.parentNode.replaceChild(createElm(newVnode), oldVnode.el);
   }
   // 2.两个节点的标签一样，可能都为 undefined, 也就是文本节点，则使用新的newVnode中的text替换oldVnode中el的元素的内容
-  console.log('patch', oldVnode, newVnode);
   if (!oldVnode.tag) {
     if (oldVnode.text !== newVnode.text) {
       oldVnode.el.textContent = newVnode.text;
@@ -68,7 +67,7 @@ export function patch(oldVnode, newVnode) {
   // 4.根节点比较完成，比较孩子节点
   let oldChildren = oldVnode.children || [];
   let newChildren = newVnode.children || [];
-  
+  console.log('el', el, newVnode, oldVnode)
   if (oldChildren.length > 0 && newChildren.length > 0) { // 1) 老的有孩子，新的有孩子
     updateChildren(el, oldChildren, newChildren);
   } else if (oldChildren.length > 0) { // 2) 老的有孩子，新的没孩子
@@ -85,23 +84,33 @@ function isSameVnode(oldVnode, newVnode) {
 }
 
 // 都有孩子，则使用指针对每一个孩子进行比较
-function updateChildren(el, oldChildren, newChildren) {
+function updateChildren(parent, oldChildren, newChildren) {
   // 老虚拟节点指针
   let oldStartIndex = 0;
   let oldStartVnode = oldChildren[0];
   let oldEndIndex = oldChildren.length - 1;
   let oldEndVnode = oldChildren[oldEndIndex];
 
+  function makeMapByIndex(oldChildren) {
+    let map = {};
+    oldChildren.forEach((child, index) => {
+      map[child.key] = index;
+    })
+    return map;
+  }
+  let map = makeMapByIndex(oldChildren);
   // 新虚拟节点指针
   let newStartIndex = 0;
   let newStartVnode = newChildren[0];
   let newEndIndex = newChildren.length - 1;
   let newEndVnode = newChildren[newEndIndex];
 
-  let parent = el.parentNode;
-
   while (oldStartIndex <= oldEndIndex &&  newStartIndex <= newEndIndex) {
-    if (isSameVnode(oldStartVnode, newStartVnode)) { // 首先比较开始节点，如果新旧节点开始节点都相同，则指针后移，直到某一方到达底部
+    if (!oldStartVnode) {
+      oldStartVnode = oldChildren[++oldStartIndex];
+    } else if(!oldEndVnode) {
+      oldEndVnode = oldChildren[--oldEndIndex];
+    } else if (isSameVnode(oldStartVnode, newStartVnode)) { // 首先比较开始节点，如果新旧节点开始节点都相同，则指针后移，直到某一方到达底部
       patch(oldStartVnode, newStartVnode); // 更新属性以及子节点
       oldStartVnode = oldChildren[++oldStartIndex];
       newStartVnode = newChildren[++newStartIndex];
@@ -116,8 +125,21 @@ function updateChildren(el, oldChildren, newChildren) {
       newEndVnode = newChildren[--newEndIndex];
     } else if (isSameVnode(oldEndVnode, newStartVnode)) { // 上面的条件都不满足，则判断 old 最后的节点 与 new 开始的节点是否相同
       patch(oldEndVnode, newStartVnode);
-      parent.insertBefore(oldEndVnode.el, oldStartVnode.el.previousSibling);
+      parent.insertBefore(oldEndVnode.el, oldStartVnode.el);
       oldEndVnode = oldChildren[--oldEndIndex];
+      newStartVnode = newChildren[++newStartIndex];
+    } else {
+      // 判断节点是否在 oldChildren 中存在，存在，不存在，则将当前节点插到 oldStartNode 左边
+      let moveIndex = map[newStartVnode.key];
+      if (moveIndex == undefined) {
+        // console.log('createElm', createElm(newStartVnode), oldStartVnode.el)
+        parent.insertBefore(createElm(newStartVnode), oldStartVnode.el);
+      } else { // 存在，则将当前找到的老节点插入到 oldStartNode 左边
+        let moveVnode = oldChildren[moveIndex];
+        patch(moveVnode, newStartVnode);
+        parent.insertBefore(moveVnode.el, oldStartVnode.el)
+        oldChildren[mapIndex] = undefined;
+      }
       newStartVnode = newChildren[++newStartIndex];
     }
   }
@@ -126,6 +148,14 @@ function updateChildren(el, oldChildren, newChildren) {
     for(let i = newStartIndex; i <= newEndIndex; i++) {
       let ele = newChildren[newEndIndex + 1] == null ? null : newChildren[newEndIndex + 1].el;
       parent.insertBefore(createElm(newChildren[i]), ele);
+    }
+  }
+  if (oldStartIndex <= oldEndIndex) {
+    for(let i = oldStartIndex; i <= oldEndIndex; i++) {
+      let child = oldChildren[i];
+      if (child != undefined) {
+        parent.removeChild(child.el);
+      }
     }
   }
 }

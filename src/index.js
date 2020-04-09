@@ -40,8 +40,9 @@ let container = document.getElementById('app')
 render(oldVnode, container)
 let newVnode =  h('div', {id: 'container', class: 'name'},
     h('li', {style: {color: 'red'}, key: 'd'}, 'd'),
+    h('li', {style: {color: 'red'}, key: 'e'}, 'e'),
     h('li', {style: {color: 'red'}, key: 'a'}, 'a'),
-    h('li', {style: {color: 'red'}, key: 'b'}, 'b'),
+    h('li', {style: {color: 'red'}, key: 'f'}, 'f'),
     h('li', {style: {color: 'red'}, key: 'c'}, 'c')
     // 'world'
   )
