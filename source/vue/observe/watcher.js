@@ -12,7 +12,6 @@ class Watcher {
         return utils.getValue(vm, exprOrFn); // 获取值会触发 getter 进行依赖收集
       }
     }
-    console.log('watcher', exprOrFn)
     if (opts.user) {
       this.user = true
     }
@@ -38,7 +37,6 @@ class Watcher {
   update() {
     // 每改一次进行一次 watcher 的执行，性能较差，使用异步批量更新
     // 待同步所有赋值操作执行完成后，再进行更新
-    console.log('update', this.id)
     if (this.lazy) {
       this.dirty = true
     } else {
@@ -82,7 +80,7 @@ function flushWatcher() {
   has = {};
 }
 // watcher队列，保存需要执行的 watcher 
-// 确保 wacher 不会被重复执行
+// 确保 watcher 不会被重复执行
 function queueWatcher(watcher) {
   let id = watcher.id;
   if (has[id] == null) {

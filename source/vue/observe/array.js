@@ -10,7 +10,7 @@ const patchMethods = [
   'pop'
 ];
 export function observerArray(arr) {
-  for (let index = 0; index < arr.length; index++) {
+  for (let index = 0, len = arr.length; index < len; index++) {
     const item = arr[index];
     observe(item);
   }
@@ -19,7 +19,7 @@ export function dependArray(value) {
   for(let i = 0; i < value.length; i++) {
     let currentItem = value[i];
     currentItem.__ob__ && currentItem.__ob__.dep.depend();
-    if (Array.isArray) {
+    if (Array.isArray(currentItem)) {
       dependArray(currentItem); // 递归收集依赖
     }
   }
@@ -39,7 +39,9 @@ patchMethods.forEach(method => {
       default:
         break;
     }
-    observerArray(inserted); // 对传入的数据添加响应式
+    if (Array.isArray(inserted)) {
+      observerArray(inserted); // 对传入的数据添加响应式
+    }
     this.__ob__.dep.notify();
     return result;
   }

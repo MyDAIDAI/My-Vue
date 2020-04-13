@@ -2,7 +2,8 @@ import {initState} from './observe/index';
 import Watcher from './observe/watcher';
 import {compiler} from './util';
 import h from './vdom/h'
-import render, {patch} from './vdom/patch'
+import render, {patch} from './vdom/patch';
+import {set} from './observe';
 function Vue(options) {
   this._init(options);
 }
@@ -72,5 +73,6 @@ Vue.prototype.$watch = function (key, handler) {
   let vm = this;
   new Watcher(vm, key, handler, {user: true});
 }
+Vue.prototype.$set = set
 
 export default Vue;

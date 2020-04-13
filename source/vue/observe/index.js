@@ -1,4 +1,4 @@
-import Observe from './observe';
+import Observe, {defineReactive} from './observe';
 import Watcher  from './watcher';
 import Dep from './dep';
 export function initState(vm) {
@@ -71,4 +71,31 @@ function initWatch(vm) {
     let handler = watch[key];
     createWatcher(vm, key, handler);
   }
+}
+
+/**
+ * 判断一个值是否是合法的数组索引
+ */
+function isValidArrayIndex(val) {
+  const n = parseFloat(String(val))
+  return n >= 0 && Math.floor(n) === n && isFinite(val)
+}
+export function set(target, key, value) {
+  // 对数组的处理
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    target.length =  Math.max(target.length, key)
+    console.log('target', target)
+    target.splice(key, 1, value)
+    return value;
+  }
+  // 对于存在与对象中的属性
+  if (key in target) {
+    target[key] = value;
+    return value;
+  }
+  // 对于不存在在对象中的属性
+  const ob = target.__ob__;
+  target[key] = value;
+  defineReactive(target, key, value);
+  ob.dep.notify()
 }

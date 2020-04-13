@@ -29,6 +29,7 @@ export function defineReactive(data, key, value) {
 class Observe{
   constructor (data) {
     this.dep = new Dep();
+    this.value = data;
     Object.defineProperty(data, '__ob__', {
       get: () => {
         return this;
