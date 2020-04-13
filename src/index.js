@@ -10,12 +10,12 @@ let vm = new Vue({
   },
   data () {
     return {
-      // msg: 'hello',
+      msg: 'hello',
       people: {
         name: '张三',
         age: 23
       },
-      arr: [[1, 2], 2, 3, {a:1}],
+      arr: [[1, 2], {a:1}],
       firstName: 'zhang',
       lastName: 'san'
     }
@@ -25,17 +25,24 @@ let vm = new Vue({
       return this.firstName + this.lastName;
     }
   },
-  // watch: {
-  //   msg: function (newVal, oldValue) {
-  //     console.log('msg watch', newVal, oldValue);
-  //   }
-  // }
+  watch: {
+    arr: {
+      handler (newVal, oldValue) {
+        console.log('arr watch', newVal, oldValue);
+      },
+      deep: true
+    }
+  }
 })
 setTimeout(()=> {
-  // console.log('$set', vm.$set)
-  // vm.$set(vm.arr, 1, "sdfsdf")
-  vm.$set(vm.people, 'school', '李四学习')
+  // debugger
   console.log('vm', vm)
+
+  vm.arr[1]['a'] = 'sss'
+  // vm.$set(vm.arr[3], 'a', '333')
+  // vm.$set(vm.arr, 1, "sdfsdf")
+  // vm.$delete(vm.people, 'name')
+  // console.log('vm', vm)
   // vm.people.school = '123123'
 }, 1000)
 // setTimeout(() => {

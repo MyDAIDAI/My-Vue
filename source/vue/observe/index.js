@@ -1,6 +1,7 @@
 import Observe, {defineReactive} from './observe';
 import Watcher  from './watcher';
 import Dep from './dep';
+import {isPlainObject} from '../util';
 export function initState(vm) {
   // 对传入的不同属性进行初始化  data computed watch
   let opts = vm.$options;
@@ -62,14 +63,27 @@ function initComputed(vm, computed) {
     })
   }
 }
-function createWatcher(vm, key, handler) {
-  return vm.$watch(key, handler);
+export function createWatcher(vm, exprOrFn, handler, options) {
+  if (isPlainObject(handler)) {
+    options = handler
+    handler = handler.handler
+  }
+  if (typeof handler === 'string') {
+    handler = vm[handler];
+  }
+  return vm.$watch(exprOrFn, handler, options);
 }
 function initWatch(vm) {
   let watch = vm.$options.watch;
   for (let key in watch) {
     let handler = watch[key];
-    createWatcher(vm, key, handler);
+    if (Array.isArray(handler)) {
+      for (let i = 0; i < handler.length; i++) {
+        createWatcher(vm, key, handler[i])
+      }
+    } else {
+      createWatcher(vm, key, handler)
+    }
   }
 }
 

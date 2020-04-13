@@ -20,6 +20,7 @@ export function defineReactive(data, key, value) {
     },
     set(newVal) {
       if (newVal === value) return;
+      console.log('key', data, key, dep)
       observe(newVal);
       value = newVal;
       dep.notify();

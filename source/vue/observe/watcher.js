@@ -1,5 +1,6 @@
 import {pushStack, popStack} from './dep';
 import {utils} from '../util';
+import traverse from './traverse';
 let id = 0;
 class Watcher {
   constructor(vm, exprOrFn, cb = () => {}, opts = {}) {
@@ -15,6 +16,7 @@ class Watcher {
     if (opts.user) {
       this.user = true
     }
+    this.deep = opts.deep || false;
     this.deps = [];
     this.lazy = opts.lazy;
     this.dirty = this.lazy;
@@ -27,7 +29,11 @@ class Watcher {
   get() {
     pushStack(this);
     let value = this.getter.call(this.vm);
+    if (this.deep) {
+      traverse(value);
+    }
     popStack();
+    
     return value;
   }
   evaluate () {
@@ -58,9 +64,8 @@ class Watcher {
     }
   }
   run() {
-    console.log('run');
     let value = this.get();
-    if (value !== this.value) {
+    if (value !== this.value || this.deep) {
       this.cb.call(this.vm, value, this.value);
     }
   }

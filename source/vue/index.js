@@ -1,9 +1,9 @@
-import {initState} from './observe/index';
+import {initState, createWatcher} from './observe/index';
 import Watcher from './observe/watcher';
-import {compiler} from './util';
+import {compiler, isPlainObject} from './util';
 import h from './vdom/h'
 import render, {patch} from './vdom/patch';
-import {set} from './observe';
+import {set, del} from './observe';
 function Vue(options) {
   this._init(options);
 }
@@ -69,10 +69,21 @@ Vue.prototype.$mount = function () {
   // 实例渲染 watcher
   new Watcher(vm, updateComponent);
 }
-Vue.prototype.$watch = function (key, handler) {
+Vue.prototype.$watch = function (expOrFn, cb, options) {
   let vm = this;
-  new Watcher(vm, key, handler, {user: true});
+  if (isPlainObject(cb)) {
+    return createWatcher(vm, expOrFn, cb, options)
+  }
+  options = options || {};
+  options.user = true;
+  const watcher = new Watcher(vm, expOrFn, cb, options);
+  // 向变量 key 中添加依赖，只有变量 key 修改的时候才会执行
+  // options.immediate 为 true, 则立即执行一次 cb 
+  if (options.immediate) {
+    cb.call(vm, watcher.value)
+  }
 }
 Vue.prototype.$set = set
+Vue.prototype.$delete = del
 
 export default Vue;
