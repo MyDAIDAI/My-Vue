@@ -99,3 +99,19 @@ export function set(target, key, value) {
   defineReactive(target, key, value);
   ob.dep.notify()
 }
+
+export function del(target, key) {
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    target.splice(key, 1);
+    return;
+  }
+  const ob = target.__ob__;
+  if (!Object.prototype.hasOwnProperty.call(target, key)) {
+    return
+  }
+  delete target[key];
+  if (!ob) {
+    return;
+  }
+  ob.dep.notify();
+}
