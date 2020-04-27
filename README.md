@@ -8,3 +8,10 @@
 - `nextTick`的原理
 - 虚拟`dom`
 - `vue`中的`diff`实现
+- `vue`中的`$set`与`$delete`
+- `vue`中的事件 `$on`, `$emit`, `$off`, `$once`
+- 组件化
+- `vue-router`
+- `keep-alive`实现原理和缓存策略
+- `vuex`
+- 编译

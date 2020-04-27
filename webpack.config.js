@@ -8,7 +8,11 @@ module.exports = {
   },
   devtool: 'source-map',
   resolve: {
-    modules: [path.resolve(__dirname, 'source'), path.resolve('node_modules')]
+    // modules: [path.resolve(__dirname, 'source'), path.resolve('node_modules')]
+    alias:{
+      'vue': 'vue/dist/vue.js'
+    },
+    modules: [path.resolve('node_modules')]
   },
   plugins: [
     new HtmlWebpackPlugin({
