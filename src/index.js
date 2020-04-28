@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import store from './store'
+console.log('store', store)
 let vm = new Vue({
 	el: '#app',
 	store,
