@@ -13,5 +13,5 @@
 - 组件化
 - `vue-router`
 - `keep-alive`实现原理和缓存策略
-- `vuex`
+- [`vuex`](vuex.md)
 - 编译
